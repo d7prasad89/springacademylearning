@@ -2,7 +2,9 @@ package com.spring.springacademylearning.cashcard;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.util.UriComponentsBuilder;
 
+import java.net.URI;
 import java.util.Optional;
 
 @RestController
@@ -27,8 +29,12 @@ public class CashcardController {
     }
 
     @PostMapping
-    private ResponseEntity<CashCard> createCashCard(@RequestBody CashCard cashCard) {
+    private ResponseEntity<CashCard> createCashCard(@RequestBody CashCard cashCard, UriComponentsBuilder ucb) {
         CashCard savedCashCard = cashCardRepository.save(cashCard);
-        return ResponseEntity.ok(savedCashCard);
+        URI locationOfNewCashCard = ucb
+                .path("cashcards/{id}")
+                .buildAndExpand(savedCashCard.Id())
+                .toUri();
+        return ResponseEntity.created(locationOfNewCashCard).build();
     }
 }
