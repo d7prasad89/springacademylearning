@@ -33,7 +33,7 @@ public class CashcardController {
         CashCard savedCashCard = cashCardRepository.save(cashCard);
         URI locationOfNewCashCard = ucb
                 .path("cashcards/{id}")
-                .buildAndExpand(savedCashCard.Id())
+                .buildAndExpand(savedCashCard.id())
                 .toUri();
         return ResponseEntity.created(locationOfNewCashCard).build();
     }

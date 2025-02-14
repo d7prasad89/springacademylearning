@@ -1,4 +1,4 @@
 package com.spring.springacademylearning.cashcard;
 
-record  CashCard(@org.springframework.data.annotation.Id Long Id, Double amount) {
+public record  CashCard(@org.springframework.data.annotation.Id Long id, Double amount) {
 }
