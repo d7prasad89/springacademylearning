@@ -8,7 +8,7 @@ import java.net.URI;
 import java.util.Optional;
 
 @RestController
-@RequestMapping("/api/v1/cashcard")
+@RequestMapping("/cashcards")
 public class CashcardController {
 
     CashCardRepository cashCardRepository;
@@ -17,15 +17,15 @@ public class CashcardController {
         this.cashCardRepository = cashCardRepository;
     }
 
-    @GetMapping
-    public String cashcard() {
-        return "cashcard";
-    }
-
     @GetMapping("{requestId}")
     private ResponseEntity<CashCard> getCashCard(@PathVariable Long requestId) {
         Optional<CashCard> cashCardOptional = cashCardRepository.findById(requestId);
         return cashCardOptional.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
+    }
+
+    @GetMapping()
+    private ResponseEntity<Iterable<CashCard>> findAll() {
+        return ResponseEntity.ok(cashCardRepository.findAll());
     }
 
     @PostMapping
