@@ -28,13 +28,13 @@ class CashCardApplicationTests {
 
 	@Test
 	void contextLoads() {
-		assertThat(mockMvcTester.get().uri("/api/v1/cashcard"))
+		assertThat(mockMvcTester.get().uri("/cashcards"))
 				.hasStatusOk()
 				.hasContentTypeCompatibleWith(MediaType.TEXT_PLAIN)
 				.bodyJson()
 				.convertTo(String.class)
-				.satisfies(s -> assertThat(s).isEqualTo("cashcard"));
-		ResponseEntity<String> response = restTemplate.getForEntity("/api/v1/cashcard/99", String.class);
+				.satisfies(s -> assertThat(s).isEqualTo("/cashcards"));
+		ResponseEntity<String> response = restTemplate.getForEntity("/cashcards/99", String.class);
 		assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
 
 		DocumentContext documentContext = JsonPath.parse(response.getBody());
@@ -59,6 +59,29 @@ class CashCardApplicationTests {
 
 		JSONArray amounts = documentContext.read("$..amount");
 		assertThat(amounts).containsExactlyInAnyOrder(123.45, 1.0, 150.00);
+	}
+
+	@Test
+	void shouldReturnAPageOfCashCards() {
+		ResponseEntity<String> response = restTemplate.getForEntity("/cashcards?page=0&size=1", String.class);
+		assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+
+		DocumentContext documentContext = JsonPath.parse(response.getBody());
+		JSONArray page = documentContext.read("$[*]");
+		assertThat(page.size()).isEqualTo(1);
+	}
+
+	@Test
+	void shouldReturnASortedPageOfCashCards() {
+		ResponseEntity<String> response = restTemplate.getForEntity("/cashcards?page=0&size=1&sort=amount,desc", String.class);
+		assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+
+		DocumentContext documentContext = JsonPath.parse(response.getBody());
+		JSONArray read = documentContext.read("$[*]");
+		assertThat(read.size()).isEqualTo(1);
+
+		double amount = documentContext.read("$[0].amount");
+		assertThat(amount).isEqualTo(150.00);
 	}
 
 }
